@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import {useEffect, useState} from 'react';
 import Button from '@material-ui/core/Button';
-import {CircularProgress} from '@material-ui/core';
+import {CircularProgress, Typography, Grid} from '@material-ui/core';
 import {GatewayStatus, useGateway} from '@civic/solana-gateway-react';
 import {CandyMachine} from './candy-machine';
 
@@ -9,20 +9,26 @@ import {CandyMachine} from './candy-machine';
 export const CTAButton = styled(Button)`
   display: inline-block !important;
   margin: 0 auto !important;
-  background-color: var(--title-text-color) !important;
-  min-width: 120px !important;
+  background: linear-gradient(180deg, #604ae5 0%, #813eee 100%) !important;
+//   background-color: var(--title-text-color) !important;
+  color: white !important;
+  width: 100% !important;
+  height: 60px !important;
+  margin-top: 10px !important;
+  margin-bottom: 5px !important;
   font-size: 1em !important;
+  font-weight: bold;
 `;
 
 export const Minus = styled.button`
-  margin-left: 30px;
   width: 40px;
   height: 40px;
   font-size: 1.3em;
   font-weight: bold;
   line-height: 0.5px;
   color: var(--main-text-color);
-  background: var(--title-text-color);
+//   background: var(--title-text-color);
+  background: linear-gradient(180deg, #604ae5 0%, #813eee 100%) !important;
   box-shadow: 0px 3px 5px -1px rgb(0 0 0 / 20%), 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%);
   border: 0;
   border-radius: 50%;
@@ -49,6 +55,7 @@ export const NumericField = styled.input`
   width: 50px;
   vertical-align: middle;
   background-color: var(--main-text-color);
+//   background: linear-gradient(180deg, #604ae5 0%, #813eee 100%) !important;
   box-shadow: 0px 3px 5px -1px rgb(0 0 0 / 20%), 0px 6px 10px 0px rgb(0 0 0 / 14%), 0px 1px 18px 0px rgb(0 0 0 / 12%);
   box-sizing: border-box;
   font-family: 'Patrick Hand', cursive;
@@ -151,92 +158,104 @@ export const MultiMintButton = ({
 
 
     return (
-        <div>
-            <div>
-                <CTAButton
-                    disabled={
-                        clicked ||
-                        candyMachine?.state.isSoldOut ||
-                        isSoldOut ||
-                        isMinting ||
-                        isEnded ||
-                        !isActive ||
-                        isVerifying
-                    }
-                    onClick={async () => {
-                        if (isActive && candyMachine?.state.gatekeeper && gatewayStatus !== GatewayStatus.ACTIVE) {
-                            console.log('Requesting gateway token');
-                            setClicked(true);
-                            await requestGatewayToken();
-                        } else {
-                            console.log('Minting...');
-                            await onMint(mintCount);
+        <>
+            <Grid
+                container
+                direction="column"
+                wrap="nowrap"
+                style={{gap: "10px", textAlign: "left", marginTop: "10px"}}
+            >
+                <Grid item >
+                    <Minus
+                        disabled={
+                            clicked ||
+                            candyMachine?.state.isSoldOut ||
+                            isSoldOut ||
+                            isMinting ||
+                            isEnded ||
+                            !isActive ||
+                            isVerifying
                         }
-                    }}
-                    variant="contained"
-                >
-                    {!candyMachine ? (
-                        "CONNECTING..."
-                    ) : candyMachine?.state.isSoldOut || isSoldOut ? (
-                        'SOLD OUT'
-                    ) : isActive ? (
-                        isVerifying ? 'VERIFYING...' :
-                            isMinting || clicked ? (
-                                <CircularProgress/>
-                            ) : (
-                                `MINT ${mintCount}`
-                            )
-                    ) : isEnded ? "ENDED" : (candyMachine?.state.goLiveDate ? (
-                        "SOON"
-                    ) : (
-                        "UNAVAILABLE"
-                    ))}
-                </CTAButton>
-                <Minus
-                    disabled={
-                        clicked ||
-                        candyMachine?.state.isSoldOut ||
-                        isSoldOut ||
-                        isMinting ||
-                        isEnded ||
-                        !isActive ||
-                        isVerifying
-                    }
-                    onClick={() => decrementValue()}
-                >-</Minus>
-                <NumericField
-                    disabled={
-                        clicked ||
-                        candyMachine?.state.isSoldOut ||
-                        isSoldOut ||
-                        isMinting ||
-                        isEnded ||
-                        !isActive ||
-                        isVerifying
-                    }
-                    type="number"
-                    className="mint-qty"
-                    step={1}
-                    min={1}
-                    max={10}
-                    value={mintCount}
-                    onChange={(e) => updateMintCount((e.target as any))}
-                />
-                <Plus
-                    disabled={
-                        clicked ||
-                        candyMachine?.state.isSoldOut ||
-                        isSoldOut ||
-                        isMinting ||
-                        isEnded ||
-                        !isActive ||
-                        isVerifying
-                    }
-                    onClick={() => incrementValue()}
-                >+</Plus>
-            </div>
-            {!candyMachine?.state.isSoldOut && !isSoldOut && isActive &&
-              <h3>Total estimated cost (Solana fees included) : {totalCost} SOL</h3>}
-        </div>
+                        onClick={() => decrementValue()}
+                    >-</Minus>
+                    <NumericField
+                        disabled={
+                            clicked ||
+                            candyMachine?.state.isSoldOut ||
+                            isSoldOut ||
+                            isMinting ||
+                            isEnded ||
+                            !isActive ||
+                            isVerifying
+                        }
+                        type="number"
+                        className="mint-qty"
+                        step={1}
+                        min={1}
+                        max={10}
+                        value={mintCount}
+                        onChange={(e) => updateMintCount((e.target as any))}
+                    />
+                    <Plus
+                        disabled={
+                            clicked ||
+                            candyMachine?.state.isSoldOut ||
+                            isSoldOut ||
+                            isMinting ||
+                            isEnded ||
+                            !isActive ||
+                            isVerifying
+                        }
+                        onClick={() => incrementValue()}
+                    >+</Plus>
+                </Grid>
+                <Grid item >
+                    <CTAButton
+                        disabled={
+                            clicked ||
+                            candyMachine?.state.isSoldOut ||
+                            isSoldOut ||
+                            isMinting ||
+                            isEnded ||
+                            !isActive ||
+                            isVerifying
+                        }
+                        onClick={async () => {
+                            if (isActive && candyMachine?.state.gatekeeper && gatewayStatus !== GatewayStatus.ACTIVE) {
+                                console.log('Requesting gateway token');
+                                setClicked(true);
+                                await requestGatewayToken();
+                            } else {
+                                console.log('Minting...');
+                                await onMint(mintCount);
+                            }
+                        }}
+                        variant="contained"
+                    >
+                        {!candyMachine ? (
+                            "CONNECTING..."
+                        ) : candyMachine?.state.isSoldOut || isSoldOut ? (
+                            'SOLD OUT'
+                        ) : isActive ? (
+                            isVerifying ? 'VERIFYING...' :
+                                isMinting || clicked ? (
+                                    <CircularProgress/>
+                                ) : (
+                                    `MINT ${mintCount}`
+                                )
+                        ) : isEnded ? "ENDED" : (candyMachine?.state.goLiveDate ? (
+                            "SOON"
+                        ) : (
+                            "UNAVAILABLE"
+                        ))}
+                    </CTAButton>
+                </Grid>
+            </Grid>
+            {!candyMachine?.state.isSoldOut && !isSoldOut && isActive && (
+                <Typography variant="body2" color="textSecondary" style={{marginTop: "15px"}}>
+                    Total estimated cost (Solana fees included) : {totalCost} SOL
+                </Typography>
+            )}
+        </>
     );
 };

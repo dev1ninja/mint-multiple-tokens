@@ -7,7 +7,7 @@ import {useAnchorWallet} from "@solana/wallet-adapter-react";
 import {WalletMultiButton} from "@solana/wallet-adapter-react-ui";
 import {GatewayProvider} from '@civic/solana-gateway-react';
 import Countdown from "react-countdown";
-import {Snackbar, Paper, LinearProgress, Chip} from "@material-ui/core";
+import {Snackbar, Paper, LinearProgress, Chip, Typography, Grid} from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import {toDate, AlertState, getAtaForMint} from './utils';
 import {MintButton} from './MintButton';
@@ -74,9 +74,9 @@ const ConnectButton = styled(WalletMultiButton)`
 const NFT = styled(Paper)`
   min-width: 500px;
   margin: 0 auto;
-  padding: 5px 20px 20px 20px;
+  padding: 20px 20px 20px 20px;
   flex: 1 1 auto;
-  background-color: var(--card-background-color) !important;
+  background-color: #151A1F !important;
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22) !important;
 `;
 
@@ -588,31 +588,70 @@ const Home = (props: HomeProps) => {
                 <MintContainer>
                     <DesContainer>
                         <NFT elevation={3}>
-                            <h2>My NFT</h2>
-                            <br/>
-                            <div><Price
-                                label={isActive && whitelistEnabled && (whitelistTokenBalance > 0) ? (whitelistPrice + " " + priceLabel) : (price + " " + priceLabel)}/><Image
-                                src="cool-cats.gif"
-                                alt="NFT To Mint"/></div>
-                            <br/>
-                            {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0) && isBurnToken &&
-                              <h3>You own {whitelistTokenBalance} WL mint {whitelistTokenBalance > 1 ? "tokens" : "token" }.</h3>}
-                            {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0) && !isBurnToken &&
-                              <h3>You are whitelisted and allowed to mint.</h3>}
-                            {wallet && isActive && endDate && Date.now() < endDate.getTime() &&
-                              <Countdown
-                                date={toDate(candyMachine?.state?.endSettings?.number)}
-                                onMount={({completed}) => completed && setIsEnded(true)}
-                                onComplete={() => {
-                                    setIsEnded(true);
-                                }}
-                                renderer={renderEndDateCounter}
-                              />}
-                            {wallet && isActive &&
-                              <h3>TOTAL MINTED : {itemsRedeemed} / {itemsAvailable}</h3>}
-                            {wallet && isActive && <BorderLinearProgress variant="determinate"
-                                                                         value={100 - (itemsRemaining * 100 / itemsAvailable)}/>}
-                            <br/>
+                            <Grid
+                                container
+                                direction="row"
+                                wrap="nowrap"
+                                style={{textAlign: "left"}}
+                            >
+                                {/* <h2>My NFT</h2> */}
+                                {/* <br/> */}
+                                <div>
+                                    {/* <Price label={isActive && whitelistEnabled && (whitelistTokenBalance > 0) ? (whitelistPrice + " " + priceLabel) : (price + " " + priceLabel)}/> */}
+                                    {/* <Image src="cool-cats.gif" alt="NFT To Mint"/> */}
+                                </div>
+                                <br/>
+                                {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0) && isBurnToken &&
+                                <h3>You own {whitelistTokenBalance} WL mint {whitelistTokenBalance > 1 ? "tokens" : "token" }.</h3>}
+                                {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0) && !isBurnToken &&
+                                <h3>You are whitelisted and allowed to mint.</h3>}
+                                {wallet && isActive && endDate && Date.now() < endDate.getTime() &&
+                                <Countdown
+                                    date={toDate(candyMachine?.state?.endSettings?.number)}
+                                    onMount={({completed}) => completed && setIsEnded(true)}
+                                    onComplete={() => {
+                                        setIsEnded(true);
+                                    }}
+                                    renderer={renderEndDateCounter}
+                                />}
+                                <Grid item xs={3}>
+                                    {wallet && isActive && (
+                                        <>
+                                            <Typography variant="body2" color="textSecondary">
+                                                Remaining
+                                            </Typography>
+                                            <Typography
+                                                variant="h6"
+                                                color="textPrimary"
+                                                style={{
+                                                    fontWeight: 'bold',
+                                                }}
+                                            >
+                                                {`${itemsRemaining}`}
+                                            </Typography>
+                                        </>
+                                    )}
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <Typography variant="body2" color="textSecondary">
+                                    {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0)
+                                        ? 'Discount Price'
+                                        : 'Price'}
+                                    </Typography>
+                                    <Typography
+                                    variant="h6"
+                                    color="textPrimary"
+                                    style={{ fontWeight: 'bold' }}
+                                    >
+                                    {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0)
+                                        ? `◎ ${whitelistPrice} ${priceLabel}`
+                                        : `◎ ${price} ${priceLabel}`}
+                                    </Typography>
+                                </Grid>
+                                {/* {wallet && isActive && <BorderLinearProgress variant="determinate"
+                                                                            value={100 - (itemsRemaining * 100 / itemsAvailable)}/>} */}
+                                {/* <br/> */}
+                            </Grid>
                             <MintButtonContainer>
                                 {!isActive && !isEnded && candyMachine?.state.goLiveDate && (!isWLOnly || whitelistTokenBalance > 0) ? (
                                     <Countdown
@@ -677,9 +716,16 @@ const Home = (props: HomeProps) => {
                                         <h1>Mint is private.</h1>
                                         )}
                             </MintButtonContainer>
-                            <br/>
                             {wallet && isActive && solanaExplorerLink &&
                               <SolExplorerLink href={solanaExplorerLink} target="_blank">View on Solscan</SolExplorerLink>}
+                            <Typography
+                                variant="caption"
+                                align="center"
+                                display="block"
+                                style={{ marginTop: 7, color: 'grey' }}
+                            >
+                                Powered by METAPLEX
+                            </Typography>
                         </NFT>
                     </DesContainer>
                 </MintContainer>
