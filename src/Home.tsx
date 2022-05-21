@@ -158,39 +158,6 @@ const DesContainer = styled.div`
   gap: 20px;
 `;
 
-const Price = styled(Chip)`
-  position: absolute;
-  margin: 5px;
-  font-weight: bold;
-  font-size: 1.2em !important;
-  font-family: 'Patrick Hand', cursive !important;
-`;
-
-const Image = styled.img`
-  height: 400px;
-  width: auto;
-  border-radius: 7px;
-  box-shadow: 5px 5px 40px 5px rgba(0,0,0,0.5);
-`;
-
-const BorderLinearProgress = styled(LinearProgress)`
-  margin: 20px;
-  height: 10px !important;
-  border-radius: 30px;
-  border: 2px solid white;
-  box-shadow: 5px 5px 40px 5px rgba(0,0,0,0.5);
-  background-color:var(--main-text-color) !important;
-  
-  > div.MuiLinearProgress-barColorPrimary{
-    background-color:var(--title-text-color) !important;
-  }
-
-  > div.MuiLinearProgress-bar1Determinate {
-    border-radius: 30px !important;
-    background-image: linear-gradient(270deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.5));
-  }
-`;
-
 export interface HomeProps {
     candyMachineId: anchor.web3.PublicKey;
     connection: anchor.web3.Connection;
@@ -234,17 +201,18 @@ const Home = (props: HomeProps) => {
     const refreshCandyMachineState = () => {
         (async () => {
             if (!wallet) return;
-
+            
             const cndy = await getCandyMachineState(
                 wallet as anchor.Wallet,
                 props.candyMachineId,
                 props.connection
             );
-
+                
+            // console.log("cndy: ", cndy);
             setCandyMachine(cndy);
-            setItemsAvailable(cndy.state.itemsAvailable);
-            setItemsRemaining(cndy.state.itemsRemaining);
-            setItemsRedeemed(cndy.state.itemsRedeemed);
+            // setItemsAvailable(cndy.state.itemsAvailable);
+            // setItemsRemaining(cndy.state.itemsRemaining);
+            // setItemsRedeemed(cndy.state.itemsRedeemed);
 
             var divider = 1;
             if (decimals) {
@@ -394,12 +362,14 @@ const Home = (props: HomeProps) => {
     async function mintMany(quantityString: number) {
         if (wallet && candyMachine?.program && wallet.publicKey) {
             const quantity = Number(quantityString);
-            const futureBalance = (balance || 0) - ((whitelistEnabled ? whitelistPrice : price) * quantity);
+            // const futureBalance = (balance || 0) - ((whitelistEnabled ? whitelistPrice : price) * quantity);
+            const futureBalance = (balance || 0) - ((whitelistEnabled && (whitelistTokenBalance > 0) ? whitelistPrice : price) * quantity);
             const signedTransactions: any = await mintMultipleToken(
                 candyMachine,
                 wallet.publicKey,
                 quantity
             );
+            console.log("HERE!!!!")
 
             const promiseArray = [];
 
@@ -588,70 +558,58 @@ const Home = (props: HomeProps) => {
                 <MintContainer>
                     <DesContainer>
                         <NFT elevation={3}>
-                            <Grid
-                                container
-                                direction="row"
-                                wrap="nowrap"
-                                style={{textAlign: "left"}}
-                            >
-                                {/* <h2>My NFT</h2> */}
-                                {/* <br/> */}
-                                <div>
-                                    {/* <Price label={isActive && whitelistEnabled && (whitelistTokenBalance > 0) ? (whitelistPrice + " " + priceLabel) : (price + " " + priceLabel)}/> */}
-                                    {/* <Image src="cool-cats.gif" alt="NFT To Mint"/> */}
-                                </div>
-                                <br/>
-                                {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0) && isBurnToken &&
-                                <h3>You own {whitelistTokenBalance} WL mint {whitelistTokenBalance > 1 ? "tokens" : "token" }.</h3>}
-                                {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0) && !isBurnToken &&
-                                <h3>You are whitelisted and allowed to mint.</h3>}
-                                {wallet && isActive && endDate && Date.now() < endDate.getTime() &&
-                                <Countdown
-                                    date={toDate(candyMachine?.state?.endSettings?.number)}
-                                    onMount={({completed}) => completed && setIsEnded(true)}
-                                    onComplete={() => {
-                                        setIsEnded(true);
-                                    }}
-                                    renderer={renderEndDateCounter}
-                                />}
-                                <Grid item xs={3}>
-                                    {wallet && isActive && (
-                                        <>
-                                            <Typography variant="body2" color="textSecondary">
-                                                Remaining
-                                            </Typography>
-                                            <Typography
-                                                variant="h6"
-                                                color="textPrimary"
-                                                style={{
-                                                    fontWeight: 'bold',
-                                                }}
-                                            >
-                                                {`${itemsRemaining}`}
-                                            </Typography>
-                                        </>
-                                    )}
+                            {wallet && candyMachine && (
+                                <Grid
+                                    container
+                                    direction="row"
+                                    wrap="nowrap"
+                                    style={{textAlign: "left"}}
+                                >
+                                    {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0) && isBurnToken &&
+                                    <h3>You own {whitelistTokenBalance} WL mint {whitelistTokenBalance > 1 ? "tokens" : "token" }.</h3>}
+                                    {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0) && !isBurnToken &&
+                                    <h3>You are whitelisted and allowed to mint.</h3>}
+                                    {wallet && isActive && endDate && Date.now() < endDate.getTime() &&
+                                    <Countdown
+                                        date={toDate(candyMachine?.state?.endSettings?.number)}
+                                        onMount={({completed}) => completed && setIsEnded(true)}
+                                        onComplete={() => {
+                                            setIsEnded(true);
+                                        }}
+                                        renderer={renderEndDateCounter}
+                                    />}
+                                    <Grid item xs={3}>
+                                        <Typography variant="body2" color="textSecondary">
+                                            Remaining
+                                        </Typography>
+                                        <Typography
+                                            variant="h6"
+                                            color="textPrimary"
+                                            style={{
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            {`${itemsRemaining}`}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <Typography variant="body2" color="textSecondary">
+                                        {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0)
+                                            ? 'Discount Price'
+                                            : 'Price'}
+                                        </Typography>
+                                        <Typography
+                                        variant="h6"
+                                        color="textPrimary"
+                                        style={{ fontWeight: 'bold' }}
+                                        >
+                                        {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0)
+                                            ? `◎ ${whitelistPrice} ${priceLabel}`
+                                            : `◎ ${price} ${priceLabel}`}
+                                        </Typography>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={4}>
-                                    <Typography variant="body2" color="textSecondary">
-                                    {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0)
-                                        ? 'Discount Price'
-                                        : 'Price'}
-                                    </Typography>
-                                    <Typography
-                                    variant="h6"
-                                    color="textPrimary"
-                                    style={{ fontWeight: 'bold' }}
-                                    >
-                                    {wallet && isActive && whitelistEnabled && (whitelistTokenBalance > 0)
-                                        ? `◎ ${whitelistPrice} ${priceLabel}`
-                                        : `◎ ${price} ${priceLabel}`}
-                                    </Typography>
-                                </Grid>
-                                {/* {wallet && isActive && <BorderLinearProgress variant="determinate"
-                                                                            value={100 - (itemsRemaining * 100 / itemsAvailable)}/>} */}
-                                {/* <br/> */}
-                            </Grid>
+                            )}
                             <MintButtonContainer>
                                 {!isActive && !isEnded && candyMachine?.state.goLiveDate && (!isWLOnly || whitelistTokenBalance > 0) ? (
                                     <Countdown
@@ -695,14 +653,6 @@ const Home = (props: HomeProps) => {
                                                 />
                                             </GatewayProvider>
                                         ) : (
-                                            /*<MintButton
-                                                candyMachine={candyMachine}
-                                                isMinting={isMinting}
-                                                isActive={isActive}
-                                                isEnded={isEnded}
-                                                isSoldOut={isSoldOut}
-                                                onMint={startMint}
-                                            />*/
                                             <MultiMintButton
                                                 candyMachine={candyMachine}
                                                 isMinting={isMinting}
@@ -710,7 +660,8 @@ const Home = (props: HomeProps) => {
                                                 isEnded={isEnded}
                                                 isSoldOut={isSoldOut}
                                                 onMint={startMint}
-                                                price={whitelistEnabled ? whitelistPrice : price}
+                                                // price={whitelistEnabled ? whitelistPrice : price}
+                                                price={whitelistEnabled && (whitelistTokenBalance > 0) ? whitelistPrice : price}
                                             />
                                         ) :
                                         <h1>Mint is private.</h1>

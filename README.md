@@ -12,8 +12,6 @@ All Candy Machine V2 functionalities are implemented, auto detected and maintain
 - spl-token to mint
 - **BONUS : multi mints on a single click/transaction (doesn't support gatekeeper)**
 
-![Candy Machine Preview Image](https://i.ibb.co/YPvH81j/multimints.png)
-
 ### Supported Wallets
 
 ![Supported Wallets](https://i.ibb.co/DC6Wt66/wallets.png)
@@ -159,7 +157,3 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
-
-## Need Help ?
-
-You can ask for help in Stractors Discord : https://t.co/0VM0TkwiAn
